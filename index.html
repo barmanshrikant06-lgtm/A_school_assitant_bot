@@ -1,0 +1,315 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI School Assistant</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background: linear-gradient(135deg,#dbeafe,#ede9fe);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 15px;
+}
+
+.chat-container {
+    width: 100%;
+    max-width: 450px;
+    height: 650px;
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 10px 40px #0002;
+    display: flex;
+    flex-direction: column;
+}
+
+.header {
+    background: linear-gradient(135deg,#4f46e5,#7c3aed);
+    color: white;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.avatar {
+    width: 48px;
+    height: 48px;
+    background: white;
+    color: #4f46e5;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    font-size: 25px;
+}
+
+.header h2 {
+    font-size: 19px;
+}
+
+.header p {
+    font-size: 12px;
+    margin-top: 5px;
+    color: #ddd6fe;
+}
+
+.status {
+    color: #86efac;
+}
+
+.chat-box {
+    flex: 1;
+    padding: 18px;
+    overflow-y: auto;
+    background: #f8fafc;
+}
+
+.message {
+    padding: 12px 15px;
+    border-radius: 15px;
+    margin-bottom: 13px;
+    max-width: 85%;
+    font-size: 14px;
+    line-height: 1.6;
+    white-space: pre-wrap;
+}
+
+.bot {
+    background: white;
+    color: #334155;
+    border: 1px solid #e2e8f0;
+    border-bottom-left-radius: 3px;
+}
+
+.user {
+    background: #4f46e5;
+    color: white;
+    margin-left: auto;
+    border-bottom-right-radius: 3px;
+}
+
+.quick-questions {
+    padding: 10px;
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    background: white;
+}
+
+.quick-questions button {
+    white-space: nowrap;
+    border: 1px solid #c7d2fe;
+    color: #4f46e5;
+    background: #eef2ff;
+    padding: 9px 12px;
+    border-radius: 20px;
+    cursor: pointer;
+}
+
+.input-area {
+    padding: 13px;
+    display: flex;
+    gap: 10px;
+    border-top: 1px solid #eee;
+    background: white;
+}
+
+.input-area input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: #f1f5f9;
+    border-radius: 25px;
+    padding: 14px;
+    font-size: 14px;
+    min-width: 0;
+}
+
+.input-area button {
+    background: #4f46e5;
+    color: white;
+    border: none;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 19px;
+}
+
+.input-area button:hover {
+    background: #3730a3;
+}
+
+.footer {
+    text-align: center;
+    font-size: 11px;
+    color: #94a3b8;
+    padding: 7px;
+}
+
+@media(max-width:500px) {
+    .chat-container {
+        height: 90vh;
+        max-height: 750px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="chat-container">
+
+    <div class="header">
+        <div class="avatar">🤖</div>
+        <div>
+            <h2>AI School Assistant</h2>
+            <p><span class="status">●</span> Online | How can I help you?</p>
+        </div>
+    </div>
+
+    <div class="chat-box" id="chatBox">
+        <div class="message bot">
+            👋 Hello Student!
+
+            Welcome to AI School Assistant.
+
+            I can help you with:
+            📚 Homework
+            📝 Exams
+            💰 School Fees
+            🕒 School Timings
+            👨‍🏫 Teachers
+
+            Ask me anything!
+        </div>
+    </div>
+
+    <div class="quick-questions">
+        <button onclick="quickAsk('School timing kya hai?')">🕒 Timing</button>
+        <button onclick="quickAsk('Exam kab hai?')">📝 Exams</button>
+        <button onclick="quickAsk('Fees kitni hai?')">💰 Fees</button>
+        <button onclick="quickAsk('Homework batao')">📚 Homework</button>
+    </div>
+
+    <div class="input-area">
+        <input
+            type="text"
+            id="userInput"
+            placeholder="Ask your question..."
+            onkeydown="if(event.key==='Enter') sendMessage()"
+        >
+        <button onclick="sendMessage()">➤</button>
+    </div>
+
+    <div class="footer">
+        Powered by AI School Assistant
+    </div>
+
+</div>
+
+<script>
+
+const chatBox = document.getElementById("chatBox");
+const input = document.getElementById("userInput");
+
+function addMessage(text, type) {
+    const msg = document.createElement("div");
+    msg.className = "message " + type;
+    msg.textContent = text;
+    chatBox.appendChild(msg);
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+function quickAsk(question) {
+    input.value = question;
+    sendMessage();
+}
+
+function getReply(question) {
+
+    let q = question.toLowerCase();
+
+    if(q.includes("hello") || q.includes("hi") || q.includes("namaste")) {
+        return "Hello! 😊 Welcome to our school assistant. How can I help you?";
+    }
+
+    if(q.includes("timing") || q.includes("time") || q.includes("school kab")) {
+        return "🕒 School Timing:\nMonday to Saturday\nMorning: 8:00 AM\nClosing: 2:00 PM\n\nPlease confirm the official timings with your school.";
+    }
+
+    if(q.includes("fee") || q.includes("fees")) {
+        return "💰 For school fee details, please contact the school office. You can ask them about tuition fees, admission fees and payment dates.";
+    }
+
+    if(q.includes("exam") || q.includes("test")) {
+        return "📝 Exam Information:\nPlease check your school notice board or contact your class teacher for the latest exam timetable.";
+    }
+
+    if(q.includes("homework") || q.includes("assignment")) {
+        return "📚 Homework Help:\nPlease tell me your class and subject. I can help you understand and solve your homework!";
+    }
+
+    if(q.includes("teacher") || q.includes("principal")) {
+        return "👨‍🏫 For teacher and principal information, please contact the school office or check your school directory.";
+    }
+
+    if(q.includes("holiday") || q.includes("chhutti")) {
+        return "🏖️ For the latest school holiday information, please check the official school notice board.";
+    }
+
+    if(q.includes("admission")) {
+        return "🎓 Admissions:\nPlease visit the school office for admission forms, eligibility, required documents and admission dates.";
+    }
+
+    if(q.includes("library")) {
+        return "📚 Library:\nYou can contact the school librarian for book availability and library timings.";
+    }
+
+    if(q.includes("thank")) {
+        return "😊 You're welcome! Happy learning!";
+    }
+
+    return "🤖 I am your School Assistant. I don't have this information yet. Please contact your school office or try asking about fees, exams, homework, timings or admissions.";
+}
+
+function sendMessage() {
+
+    let question = input.value.trim();
+
+    if(question === "") return;
+
+    addMessage(question, "user");
+
+    input.value = "";
+
+    const typing = document.createElement("div");
+    typing.className = "message bot";
+    typing.textContent = "🤖 Thinking...";
+    chatBox.appendChild(typing);
+
+    chatBox.scrollTop = chatBox.scrollHeight;
+
+    setTimeout(() => {
+        const reply = getReply(question);
+        typing.textContent = reply;
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }, 700);
+}
+
+</script>
+
+</body>
+</html>
